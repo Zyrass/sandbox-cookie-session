@@ -67,3 +67,49 @@ app.get('/', (req, res) => {
   console.log(req.session);
 });
 ```
+
+## Etape 6 - Persisté les cookies en base de donnée.
+
+### Etape 6.1 - Installation des dépendances
+
+```sh
+npm install mongoose connect-mongo
+```
+
+### Etape 6.2 - Création d'un fichier pour la connection à la DB
+
+> Pas besoin d'expliquer cette étape, seulement on aura besoin de mongoose.
+
+### Etape 6.3 - Import de connect-mongo (version 4.4.1 utilisé ici)
+
+```js
+const MongoStore = require('connect-mongo');
+```
+
+### Etape 6.4 - Utilisation de MongoStore
+
+```js
+app.use(
+  session({
+    secret: 'Je suis une super phrase secrète',
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+      httpOnly: true,
+      secure: false,
+      path: '/',
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+    },
+    store: MongoStore.create({
+      mongoUrl:
+        'mongodb+srv://<pseudo>:<password>@expresssession.zve6h.mongodb.net/<db_name>',
+      ttl: 60 * 60 * 24 * 7,
+      touchAfter: 60 * 60 * 24,
+      autoRemove: 'native',
+      crypto: {
+        secret: this.secret,
+      },
+    }),
+  })
+);
+```

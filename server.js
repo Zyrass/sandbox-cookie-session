@@ -1,7 +1,9 @@
 // Dépendances
-const { join }  = require("path")
-const express   = require("express")
-const session   = require("express-session")
+require("./database")
+const { join }    = require("path")
+const express     = require("express")
+const session     = require("express-session")
+const MongoStore  = require("connect-mongo")
 
 // Initialisation de l'application
 const port  = process.env.PORT || 4000
@@ -22,7 +24,16 @@ app.use(session({
     httpOnly: true,
     maxAge: 1000 * 60 * 60 * 24 * 7, // 7 jours
     secure: false
-  }
+  },
+  store: MongoStore.create({
+    mongoUrl: 'mongodb+srv://zyrass:demo@expresssession.zve6h.mongodb.net/demo',
+    ttl: 60 * 60 * 24 * 7,
+    touchAfter: 3600 * 24,
+    autoRemove: "native",
+    crypto: {
+      secret: this.secret
+    }
+  })
 }))
 
 // Routing
